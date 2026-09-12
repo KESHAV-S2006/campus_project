@@ -38,6 +38,10 @@ searchInput.addEventListener("keydown", function (event) {
 
 cards.forEach(card => {
     card.addEventListener("click", function () {
+        if (this.dataset.href) {
+            window.location.href = this.dataset.href;
+            return;
+        }
         const serviceName = this.querySelector("h3").textContent;
         alert(`Launching ${serviceName} application...`);
     });
