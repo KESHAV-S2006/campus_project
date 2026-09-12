@@ -73,12 +73,15 @@ _booking_lock = threading.Lock()
 seats_booked = {}
 tickets = {}
 
+
 def find_trip(trip_id):
     return ALL_TRIPS.get(trip_id)
+
 
 def seats_available(trip_id):
     with _booking_lock:
         return CAPACITY - seats_booked.get(trip_id, 0)
+
 
 def try_reserve_seat(trip_id):
     with _booking_lock:
@@ -88,10 +91,32 @@ def try_reserve_seat(trip_id):
         seats_booked[trip_id] = taken + 1
         return True
 
+
 def release_seat(trip_id):
     with _booking_lock:
         if seats_booked.get(trip_id, 0) > 0:
             seats_booked[trip_id] -= 1
+
+
+# ---------------------------------------------------------------- error handlers
+# These make sure that even framework-level errors (404, 500, etc.) return JSON
+# for any request under /api/, instead of Flask's default HTML error pages.
+# This is what was causing "Unexpected token '<' ... is not valid JSON" —
+# your frontend fetch() calls were receiving HTML error pages instead of JSON.
+
+@app.errorhandler(404)
+def handle_404(e):
+    if request.path.startswith('/api/'):
+        return jsonify({'error': 'Not found'}), 404
+    return e
+
+
+@app.errorhandler(500)
+def handle_500(e):
+    if request.path.startswith('/api/'):
+        log.exception('Unhandled server error')
+        return jsonify({'error': 'Internal server error'}), 500
+    return e
 
 
 # ---------------------------------------------------------------- frontend routes
@@ -100,13 +125,16 @@ def release_seat(trip_id):
 def serve_home():
     return render_template('home.html')
 
+
 @app.route('/avalableBUS.html')
 def serve_available_bus():
     return render_template('avalableBUS.html')
 
+
 @app.route('/booking.html')
 def serve_booking():
     return render_template('booking.html')
+
 
 @app.route('/ticket.html')
 def serve_ticket():
@@ -125,14 +153,15 @@ def get_trips():
                 **t,
                 'available': seats_available(t['id']),
                 'capacity': CAPACITY
-            } 
+            }
             for t in trips_list
         ]
-    
+
     return jsonify({
         'weekday': enrich(WEEKDAY_TRIPS),
         'weekend': enrich(WEEKEND_TRIPS)
     })
+
 
 @app.route('/api/trip/<trip_id>')
 def get_trip(trip_id):
@@ -146,76 +175,104 @@ def get_trip(trip_id):
         'seatsAvailable': seats_available(trip_id),
     })
 
+
 @app.route('/api/create-order', methods=['POST'])
 def create_order():
-    data = request.get_json(force=True)
-    trip_id = data.get('tripId')
+    try:
+        data = request.get_json(force=True)
+        trip_id = data.get('tripId') if data else None
 
-    trip = find_trip(trip_id)
-    if not trip:
-        return jsonify({'error': 'Trip not found'}), 404
+        if not trip_id:
+            return jsonify({'error': 'tripId is required'}), 400
 
-    if seats_available(trip_id) <= 0:
-        log.info('create-order rejected: trip=%s is full', trip_id)
-        return jsonify({'error': 'This trip is fully booked'}), 409
+        trip = find_trip(trip_id)
+        if not trip:
+            return jsonify({'error': 'Trip not found'}), 404
 
-    order = razorpay_client.order.create({
-        'amount': TICKET_PRICE_PAISE,
-        'currency': 'INR',
-        'receipt': f'{trip_id}-{datetime.utcnow().timestamp():.0f}',
-        'notes': {'tripId': trip_id},
-    })
+        if seats_available(trip_id) <= 0:
+            log.info('create-order rejected: trip=%s is full', trip_id)
+            return jsonify({'error': 'This trip is fully booked'}), 409
 
-    log.info('order created: order_id=%s trip=%s amount=%s', order['id'], trip_id, TICKET_PRICE_PAISE)
+        order = razorpay_client.order.create({
+            'amount': TICKET_PRICE_PAISE,
+            'currency': 'INR',
+            'receipt': f'{trip_id}-{datetime.utcnow().timestamp():.0f}',
+            'notes': {'tripId': trip_id},
+        })
 
-    return jsonify({
-        'orderId': order['id'],
-        'amount': TICKET_PRICE_PAISE,
-        'currency': 'INR',
-        'keyId': RAZORPAY_KEY_ID,   # safe to send public key to frontend
-    })
+        log.info('order created: order_id=%s trip=%s amount=%s', order['id'], trip_id, TICKET_PRICE_PAISE)
+
+        return jsonify({
+            'orderId': order['id'],
+            'amount': TICKET_PRICE_PAISE,
+            'currency': 'INR',
+            'keyId': RAZORPAY_KEY_ID,   # safe to send public key to frontend
+        })
+
+    except razorpay.errors.BadRequestError as e:
+        log.exception('Razorpay rejected the order request')
+        return jsonify({'error': f'Razorpay error: {str(e)}'}), 400
+
+    except Exception as e:
+        log.exception('create_order failed unexpectedly')
+        return jsonify({'error': 'Could not create order. Check server logs / Razorpay credentials.'}), 500
+
 
 @app.route('/api/verify-and-book', methods=['POST'])
 def verify_and_book():
-    data = request.get_json(force=True)
-
-    trip_id = data.get('tripId')
-    name = (data.get('name') or '').strip()
-    roll_no = (data.get('rollNo') or '').strip().upper()
-
-    trip = find_trip(trip_id)
-    if not trip or not name or not roll_no:
-        return jsonify({'error': 'Missing or invalid booking details'}), 400
-
     try:
-        razorpay_client.utility.verify_payment_signature({
-            'razorpay_order_id': data.get('razorpay_order_id'),
-            'razorpay_payment_id': data.get('razorpay_payment_id'),
-            'razorpay_signature': data.get('razorpay_signature'),
-        })
-    except razorpay.errors.SignatureVerificationError:
-        log.warning('signature verification FAILED for order=%s', data.get('razorpay_order_id'))
-        return jsonify({'error': 'Payment verification failed'}), 400
+        data = request.get_json(force=True)
+        if not data:
+            return jsonify({'error': 'Invalid request body'}), 400
 
-    if not try_reserve_seat(trip_id):
-        log.error('SOLD OUT after payment: trip=%s payment=%s — issuing refund', trip_id, data.get('razorpay_payment_id'))
-        razorpay_client.payment.refund(data.get('razorpay_payment_id'), {'amount': TICKET_PRICE_PAISE})
-        return jsonify({'error': 'Seat sold out during payment. You have been refunded.'}), 409
+        trip_id = data.get('tripId')
+        name = (data.get('name') or '').strip()
+        roll_no = (data.get('rollNo') or '').strip().upper()
 
-    code = 'IIITDM' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    ticket = {
-        'code': code,
-        'name': name,
-        'rollNo': roll_no,
-        'route': trip['route'],
-        'bus': trip['bus'],
-        'time': trip['time'],
-        'date': datetime.now().strftime('%a %b %d %Y'),
-    }
-    tickets[code] = ticket
-    log.info('ticket issued: code=%s trip=%s roll=%s', code, trip_id, roll_no)
+        trip = find_trip(trip_id)
+        if not trip or not name or not roll_no:
+            return jsonify({'error': 'Missing or invalid booking details'}), 400
 
-    return jsonify(ticket)
+        try:
+            razorpay_client.utility.verify_payment_signature({
+                'razorpay_order_id': data.get('razorpay_order_id'),
+                'razorpay_payment_id': data.get('razorpay_payment_id'),
+                'razorpay_signature': data.get('razorpay_signature'),
+            })
+        except razorpay.errors.SignatureVerificationError:
+            log.warning('signature verification FAILED for order=%s', data.get('razorpay_order_id'))
+            return jsonify({'error': 'Payment verification failed'}), 400
+
+        if not try_reserve_seat(trip_id):
+            log.error(
+                'SOLD OUT after payment: trip=%s payment=%s — issuing refund',
+                trip_id, data.get('razorpay_payment_id')
+            )
+            try:
+                razorpay_client.payment.refund(data.get('razorpay_payment_id'), {'amount': TICKET_PRICE_PAISE})
+            except Exception:
+                log.exception('Refund attempt failed for payment=%s', data.get('razorpay_payment_id'))
+            return jsonify({'error': 'Seat sold out during payment. You have been refunded.'}), 409
+
+        code = 'IIITDM' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        ticket = {
+            'code': code,
+            'name': name,
+            'rollNo': roll_no,
+            'route': trip['route'],
+            'bus': trip['bus'],
+            'time': trip['time'],
+            'date': datetime.now().strftime('%a %b %d %Y'),
+        }
+        tickets[code] = ticket
+        log.info('ticket issued: code=%s trip=%s roll=%s', code, trip_id, roll_no)
+
+        return jsonify(ticket)
+
+    except Exception as e:
+        log.exception('verify_and_book failed unexpectedly')
+        return jsonify({'error': 'Booking failed due to a server error.'}), 500
+
 
 @app.route('/api/ticket/<code>')
 def get_ticket(code):
@@ -223,6 +280,7 @@ def get_ticket(code):
     if not ticket:
         return jsonify({'error': 'Ticket not found'}), 404
     return jsonify(ticket)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
