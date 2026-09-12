@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boarding Pass | IIITDM Bus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- html2canvas library for downloading ticket as PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Print styles to hide navigation and buttons when printing */
+        @media print {
+
+            .page-header,
+            .action-btns,
+            .bg-layer {
+                display: none !important;
+            }
+
+            body {
+                background: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .board {
+                margin: 0 auto !important;
+                box-shadow: none !important;
+            }
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--gold-bright, #d4af37);
+            color: var(--gold-bright, #d4af37);
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn:hover {
+            background: var(--gold-bright, #d4af37);
+            color: #000;
+        }
+
+        .btn-secondary {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: var(--champagne, #f3e5ab);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">IIITDM Campus Shuttle</p>
+            <h1>Boarding Pass</h1>
+        </div>
+        <a href="index.html" class="tab" style="text-decoration:none;">Done</a>
+    </header>
+
+    <main>
+        <section class="board" id="ticketBoard" style="padding: 1.75rem; max-width: 480px; margin: 0 auto;">
+            <!-- Ticket Header -->
+            <div
+                style="text-align: center; border-bottom: 1px dashed var(--hairline); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
+                <span class="bus-tag bus2" style="font-size: 0.85rem; margin-bottom: 0.5rem;">CONFIRMED & PAID ✓</span>
+                <p style="color: var(--muted); font-size: 0.8rem; margin: 0.4rem 0 0.2rem;">UNIQUE TICKET CODE</p>
+                <h2 id="tCode"
+                    style="font-family: 'IBM Plex Mono', monospace; font-size: 1.8rem; color: var(--gold-bright); letter-spacing: 0.1em; margin: 0;">
+                    ------</h2>
+            </div>
+
+            <!-- Passenger & Trip Details -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; font-size: 0.9rem;">
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">PASSENGER</span>
+                    <strong id="tName" style="color: var(--champagne);">--</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">ROLL NO.</span>
+                    <strong id="tRoll"
+                        style="color: var(--champagne); font-family: 'IBM Plex Mono', monospace;">--</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">ROUTE</span>
+                    <strong id="tRoute" style="color: var(--champagne);">--</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">BUS NUMBER</span>
+                    <strong id="tBus" style="color: var(--champagne);">--</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">DEPARTURE TIME</span>
+                    <strong id="tTime"
+                        style="color: var(--gold-bright); font-family: 'IBM Plex Mono', monospace;">--</strong>
+                </div>
+                <div>
+                    <span style="color: var(--muted); font-size: 0.78rem; display: block;">DATE</span>
+                    <strong id="tDate" style="color: var(--champagne);">--</strong>
+                </div>
+            </div>
+
+            <!-- Dynamic QR Code Container -->
+            <div
+                style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed var(--hairline);">
+                <div id="qrcode"
+                    style="padding: 10px; background: #ffffff; border-radius: 8px; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center;">
+                </div>
+                <p style="color: var(--muted); font-size: 0.75rem; margin-top: 0.6rem; margin-bottom: 0;">Scan for
+                    digital verification</p>
+            </div>
+
+            <p
+                style="font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                Show this unique code or QR code to conductor <strong>Mr. Tilak Singh</strong> upon boarding.
+            </p>
+        </section>
+
+        <!-- Print & Download Action Buttons -->
+        <div class="action-btns"
+            style="display: flex; justify-content: center; gap: 1rem; margin: 1.5rem auto; max-width: 480px;">
+            <button onclick="window.print()" class="btn btn-secondary">
+                🖨️ Print Ticket
+            </button>
+            <button onclick="downloadTicket()" class="btn">
+                ⬇️ Download PNG
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const tickets = JSON.parse(localStorage.getItem('issued-tickets') || '{}');
+        const t = tickets[code];
+
+        if (t) {
+            document.getElementById('tCode').textContent = t.code;
+            document.getElementById('tName').textContent = t.name;
+            document.getElementById('tRoll').textContent = t.rollNo;
+            document.getElementById('tRoute').textContent = t.route;
+            document.getElementById('tBus').textContent = `Bus ${t.bus}`;
+            document.getElementById('tTime').textContent = t.time;
+            document.getElementById('tDate').textContent = t.date;
+
+            // Encode all ticket details into a single JSON object for scanning
+            const ticketPayload = JSON.stringify({
+                code: t.code,
+                name: t.name,
+                rollNo: t.rollNo,
+                route: t.route,
+                bus: t.bus,
+                time: t.time,
+                date: t.date
+            });
+
+            // Generate QR image via reliable public API
+            const qrImg = document.createElement('img');
+            qrImg.crossOrigin = "anonymous";
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(ticketPayload)}`;
+            qrImg.alt = "Ticket QR Code";
+            qrImg.style.width = "100%";
+            qrImg.style.height = "100%";
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.appendChild(qrImg);
+        } else {
+            alert('Ticket not found!');
+            window.location.href = 'index.html';
+        }
+
+        // Function to capture the ticket section and save as PNG image
+        function downloadTicket() {
+            const ticketElement = document.getElementById('ticketBoard');
+            html2canvas(ticketElement, {
+                useCORS: true,
+                scale: 2,
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `IIITDM_BoardingPass_${t ? t.code : 'ticket'}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error('Download failed:', err);
+                alert('Failed to generate image download. You can still use the Print option.');
+            });
+        }
+    </script>
+</body>
+
+</html>

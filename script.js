@@ -2,6 +2,54 @@
 // Two scribbled-out rows on Bus No. 2's weekday schedule were unreadable
 // in the source photo and are left out on purpose.
 
+//  HOME PAGE
+
+const searchInput = document.getElementById("searchInput");
+const cards = document.querySelectorAll(".service-card");
+const serviceCount = document.getElementById("serviceCount");
+const noResult = document.getElementById("noResult");
+
+function filterServices() {
+    const query = searchInput.value.toLowerCase().trim();
+    let visibleCards = 0;
+
+    cards.forEach(card => {
+        const name = card.dataset.name.toLowerCase();
+        const description = card.dataset.description.toLowerCase();
+        const matches = name.includes(query) || description.includes(query);
+
+        // Uses flex because our updated CSS grid cards rely on display flex
+        card.style.display = matches ? "flex" : "none";
+        if (matches) visibleCards++;
+    });
+
+    serviceCount.textContent = visibleCards === 1
+        ? "1 service found"
+        : `${visibleCards} services found`;
+
+    noResult.classList.toggle("show", visibleCards === 0);
+}
+
+searchInput.addEventListener("input", filterServices);
+
+searchInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") filterServices();
+});
+
+cards.forEach(card => {
+    card.addEventListener("click", function () {
+        const serviceName = this.querySelector("h3").textContent;
+        alert(`Launching ${serviceName} application...`);
+    });
+});
+
+document.getElementById("logoutBtn").addEventListener("click", function () {
+    if (confirm("Are you sure you want to log out of your session?")) {
+        window.location.href = "login.html";
+    }
+});
+
+// BOOK BUS
 const WEEKDAY_TRIPS = [
     { id: 'wd-b1-1', bus: 1, route: 'Institute→Sadar', time: '15:40', purpose: 'Staff/Student' },
     { id: 'wd-b1-2', bus: 1, route: 'Sadar→Institute', time: '16:30', purpose: 'Staff/Student' },
@@ -127,16 +175,6 @@ function render() {
     }
 }
 
-document.getElementById('boardRows').addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-trip]');
-    if (!btn || btn.disabled) return;
-    const dateKey = todayKey();
-    const key = dateKey + btn.dataset.trip;
-    bookings[key] = (bookings[key] || 0) + 1;
-    localStorage.setItem('bus-bookings', JSON.stringify(bookings));
-    render();
-});
-
 document.getElementById('routeTabs').addEventListener('click', (e) => {
     const tab = e.target.closest('.tab');
     if (!tab) return;
@@ -154,3 +192,12 @@ tickClock();
 setInterval(tickClock, 1000);
 render();
 setInterval(render, 30000);
+
+// "Book seat" button → go to booking page with the selected trip ID
+document.getElementById('boardRows').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-trip]');
+    if (!btn || btn.disabled) return;
+
+    const tripId = btn.dataset.trip;
+    window.location.href = `booking.html?tripId=${tripId}`;
+});
