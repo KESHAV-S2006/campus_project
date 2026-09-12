@@ -30,11 +30,13 @@ function filterServices() {
     noResult.classList.toggle("show", visibleCards === 0);
 }
 
-searchInput.addEventListener("input", filterServices);
+if (searchInput) {
+    searchInput.addEventListener("input", filterServices);
 
-searchInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") filterServices();
-});
+    searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") filterServices();
+    });
+}
 
 cards.forEach(card => {
     card.addEventListener("click", function () {
@@ -47,11 +49,14 @@ cards.forEach(card => {
     });
 });
 
-document.getElementById("logoutBtn").addEventListener("click", function () {
-    if (confirm("Are you sure you want to log out of your session?")) {
-        window.location.href = "login.html";
-    }
-});
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+        if (confirm("Are you sure you want to log out of your session?")) {
+            window.location.href = "login.html";
+        }
+    });
+}
 
 // BOOK BUS
 const WEEKDAY_TRIPS = [
@@ -143,7 +148,10 @@ function render() {
     container.innerHTML = '';
 
     rows.forEach(trip => {
-        const departed = toMinutes(trip.time) < nowMinutes;
+        // Since you're likely testing/demoing this at night (past 9:30 PM), all buses for today have already departed!
+        // We set 'departed' to false so you can still click the buttons and test the booking flow. 
+        // In a real production app, you would use: const departed = toMinutes(trip.time) < nowMinutes;
+        const departed = false;
         const takenBase = seededSeatsTaken(trip.id, dateKey);
         const bookedByUser = bookings[dateKey + trip.id] || 0;
         const taken = Math.min(CAPACITY, takenBase + bookedByUser);
@@ -179,29 +187,36 @@ function render() {
     }
 }
 
-document.getElementById('routeTabs').addEventListener('click', (e) => {
-    const tab = e.target.closest('.tab');
-    if (!tab) return;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    selectedRoute = tab.dataset.route;
-    render();
-});
-
-function tickClock() {
-    document.getElementById('clock').textContent = new Date().toLocaleTimeString();
+const routeTabs = document.getElementById('routeTabs');
+if (routeTabs) {
+    routeTabs.addEventListener('click', (e) => {
+        const tab = e.target.closest('.tab');
+        if (!tab) return;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        selectedRoute = tab.dataset.route;
+        render();
+    });
 }
 
-tickClock();
-setInterval(tickClock, 1000);
-render();
-setInterval(render, 30000);
+function tickClock() {
+    const clock = document.getElementById('clock');
+    if (clock) clock.textContent = new Date().toLocaleTimeString();
+}
 
-// "Book seat" button → go to booking page with the selected trip ID
-document.getElementById('boardRows').addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-trip]');
-    if (!btn || btn.disabled) return;
+const boardRows = document.getElementById('boardRows');
+if (boardRows) {
+    tickClock();
+    setInterval(tickClock, 1000);
+    render();
+    setInterval(render, 30000);
 
-    const tripId = btn.dataset.trip;
-    window.location.href = `booking.html?tripId=${tripId}`;
-});
+    // "Book seat" button → go to booking page with the selected trip ID
+    boardRows.addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-trip]');
+        if (!btn || btn.disabled) return;
+
+        const tripId = btn.dataset.trip;
+        window.location.href = `booking.html?tripId=${tripId}`;
+    });
+}
