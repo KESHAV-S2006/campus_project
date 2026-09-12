@@ -40,6 +40,16 @@
             </div>
         </section>
 
+        <section class="board" id="myTicketsSection" style="margin-top: 1.5rem;">
+            <div class="board-strip">
+                <span>Your Booked Tickets</span>
+                <span id="myTicketsRefresh" style="cursor:pointer; color: var(--muted); font-size:0.8rem;">↻ Refresh</span>
+            </div>
+            <div id="myTicketsList" class="my-tickets-list">
+                <!-- injected by script.js -->
+            </div>
+        </section>
+
         <p class="note">Seat counts are a demo simulation, not a live feed from the buses. Wire <code>script.js</code>
             up to a real sensor or booking backend to replace it.</p>
     </main>
@@ -49,6 +59,7 @@
             <span><strong>Conductor</strong> — Mr. Tilak Singh · 9826346178</span>
             <span><strong>Queries</strong> — Mr. Ganesh Kashyap · 9425155203</span>
         </div>
+        <p style="margin-top: 0.75rem;"><a href="/owner.html" style="color: var(--muted); font-size: 0.8rem;">Bus operator login</a></p>
     </footer>
 
     <script src="/static/script.js"></script>

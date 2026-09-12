@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Dashboard | IIITDM Bus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">IIITDM Campus Shuttle</p>
+            <h1>Operator Dashboard</h1>
+        </div>
+        <div id="headerActions">
+            <a href="/" class="tab" style="text-decoration:none;">← Home</a>
+        </div>
+    </header>
+
+    <main>
+        <div id="loginView" class="login-box">
+            <h2>Operator Login</h2>
+            <form id="loginForm">
+                <div class="field">
+                    <label>Username</label>
+                    <input type="text" id="loginUser" autocomplete="username" required>
+                </div>
+                <div class="field">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="action-btn book" style="width:100%; padding:0.7rem;">Log In</button>
+                <p class="error-msg" id="loginError"></p>
+            </form>
+        </div>
+
+        <div id="dashboardView" style="display:none; max-width: 800px; margin: 0 auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                <p style="color: var(--muted); margin:0;">All booked tickets, grouped by trip.</p>
+                <button id="logoutBtn" class="btn btn-secondary">Log Out</button>
+            </div>
+            <div id="tripsContainer"></div>
+        </div>
+    </main>
+
+    <script>
+        const loginView = document.getElementById('loginView');
+        const dashboardView = document.getElementById('dashboardView');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const tripsContainer = document.getElementById('tripsContainer');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function showDashboard() {
+            loginView.style.display = 'none';
+            dashboardView.style.display = 'block';
+            loadTickets();
+        }
+
+        function showLogin() {
+            loginView.style.display = 'block';
+            dashboardView.style.display = 'none';
+        }
+
+        function formatTime(hhmm) {
+            const [h, m] = hhmm.split(':').map(Number);
+            const period = h >= 12 ? 'PM' : 'AM';
+            const h12 = ((h + 11) % 12) + 1;
+            return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+        }
+
+        function statusLabel(status) {
+            if (status === 'valid') return 'Booked';
+            if (status === 'checked_in') return 'Checked in';
+            if (status === 'cancelled') return 'Cancelled';
+            return status;
+        }
+
+        function loadTickets() {
+            fetch('/api/owner/tickets')
+                .then(res => {
+                    if (res.status === 401) { showLogin(); throw new Error('unauthorized'); }
+                    return res.json();
+                })
+                .then(data => {
+                    tripsContainer.innerHTML = '';
+                    if (!data.trips || data.trips.length === 0) {
+                        tripsContainer.innerHTML = '<div class="empty-state">No tickets booked yet.</div>';
+                        return;
+                    }
+
+                    data.trips.forEach(group => {
+                        const wrap = document.createElement('div');
+                        wrap.className = 'trip-group';
+
+                        const total = group.passengers.length;
+                        const active = group.passengers.filter(p => p.status !== 'cancelled').length;
+
+                        wrap.innerHTML = `
+                            <div class="trip-group-header">
+                                <div>
+                                    <strong>${formatTime(group.time)}</strong>
+                                    &nbsp;·&nbsp; Bus ${group.bus} &nbsp;·&nbsp; ${group.route}
+                                    &nbsp;·&nbsp; <span style="color:var(--muted); font-size:0.8rem;">${group.dayType}</span>
+                                </div>
+                                <div style="color: var(--muted); font-size: 0.82rem;">${active} active / ${total} total</div>
+                            </div>
+                            <table class="passenger-table">
+                                <thead>
+                                    <tr><th>Name</th><th>Roll No.</th><th>Code</th><th>Status</th><th></th></tr>
+                                </thead>
+                                <tbody>
+                                    ${group.passengers.map(p => `
+                                        <tr>
+                                            <td>${p.name}</td>
+                                            <td style="font-family:'IBM Plex Mono', monospace;">${p.rollNo}</td>
+                                            <td style="font-family:'IBM Plex Mono', monospace;">${p.code}</td>
+                                            <td><span class="pill ${p.status}">${statusLabel(p.status)}</span></td>
+                                            <td>
+                                                <button class="checkin-btn" data-code="${p.code}"
+                                                    ${p.status !== 'valid' ? 'disabled' : ''}>
+                                                    ${p.status === 'checked_in' ? 'Checked in ✓' : 'Check in'}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        `;
+                        tripsContainer.appendChild(wrap);
+                    });
+
+                    tripsContainer.querySelectorAll('.checkin-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            if (btn.disabled) return;
+                            const code = btn.dataset.code;
+                            btn.disabled = true;
+                            btn.textContent = 'Checking in...';
+                            fetch('/api/owner/checkin', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ code })
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.error) {
+                                        alert(data.error);
+                                    }
+                                    loadTickets();
+                                })
+                                .catch(() => {
+                                    alert('Could not reach the server.');
+                                    loadTickets();
+                                });
+                        });
+                    });
+                })
+                .catch(err => {
+                    if (err.message !== 'unauthorized') console.error(err);
+                });
+        }
+
+        loginForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            loginError.textContent = '';
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value;
+
+            fetch('/api/owner/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+                .then(res => res.json().then(data => ({ ok: res.ok, data })))
+                .then(({ ok, data }) => {
+                    if (!ok) {
+                        loginError.textContent = data.error || 'Login failed.';
+                        return;
+                    }
+                    showDashboard();
+                })
+                .catch(() => {
+                    loginError.textContent = 'Could not reach the server.';
+                });
+        });
+
+        logoutBtn.addEventListener('click', function () {
+            fetch('/api/owner/logout', { method: 'POST' }).then(() => showLogin());
+        });
+
+        // On load, check if already logged in (session persists until logout / browser restart).
+        fetch('/api/owner/status')
+            .then(res => res.json())
+            .then(data => { data.loggedIn ? showDashboard() : showLogin(); })
+            .catch(() => showLogin());
+    </script>
+</body>
+
+</html>

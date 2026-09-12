@@ -815,3 +815,270 @@ footer {
         flex-direction: column;
     }
 }
+
+/* ================= SHARED BUTTONS (ticket + owner dashboard) ================= */
+.btn {
+    background: transparent;
+    border: 1px solid var(--gold-bright, #d4af37);
+    color: var(--gold-bright, #d4af37);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn:hover {
+    background: var(--gold-bright, #d4af37);
+    color: #000;
+}
+
+.btn-secondary {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--champagne, #f3e5ab);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.btn-danger {
+    border-color: #d9534f;
+    color: #f28b82;
+}
+
+.btn-danger:hover {
+    background: #d9534f;
+    color: #fff;
+}
+
+.btn-danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: transparent;
+    color: #f28b82;
+}
+
+/* ================= STATUS BANNER (ticket page) ================= */
+.status-banner {
+    text-align: center;
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin: 0 auto 1rem;
+    max-width: 480px;
+}
+
+.status-banner.cancelled {
+    background: rgba(217, 83, 79, 0.15);
+    color: #f28b82;
+    border: 1px solid rgba(217, 83, 79, 0.4);
+}
+
+.status-banner.checked_in {
+    background: rgba(92, 184, 92, 0.15);
+    color: #9be89b;
+    border: 1px solid rgba(92, 184, 92, 0.4);
+}
+
+/* Print styles to hide navigation and buttons when printing (used on ticket.html) */
+@media print {
+
+    .page-header,
+    .action-btns,
+    .bg-layer {
+        display: none !important;
+    }
+
+    body {
+        background: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .board {
+        margin: 0 auto !important;
+        box-shadow: none !important;
+    }
+}
+
+/* ================= OWNER / OPERATOR DASHBOARD ================= */
+.login-box {
+    max-width: 360px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+}
+
+.login-box h2 {
+    margin-top: 0;
+    color: var(--champagne);
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+.field label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+}
+
+.field input {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    color: var(--ink);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.error-msg {
+    color: #f28b82;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    min-height: 1.1em;
+}
+
+.trip-group {
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+}
+
+.trip-group-header {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.trip-group-header strong {
+    color: var(--gold-bright);
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.passenger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.passenger-table th,
+.passenger-table td {
+    text-align: left;
+    padding: 0.6rem 1.1rem;
+    border-top: 1px solid var(--hairline);
+}
+
+.passenger-table th {
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+}
+
+.pill {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.pill.valid {
+    background: rgba(212, 175, 55, 0.15);
+    color: var(--gold-bright, #d4af37);
+}
+
+.pill.checked_in {
+    background: rgba(92, 184, 92, 0.15);
+    color: #9be89b;
+}
+
+.pill.cancelled {
+    background: rgba(217, 83, 79, 0.15);
+    color: #f28b82;
+}
+
+.checkin-btn {
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--gold-bright, #d4af37);
+    background: transparent;
+    color: var(--gold-bright, #d4af37);
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.checkin-btn:hover:not(:disabled) {
+    background: var(--gold-bright, #d4af37);
+    color: #000;
+}
+
+.checkin-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 3rem 1rem;
+}
+
+/* ================= YOUR BOOKED TICKETS (bus board page) ================= */
+.my-tickets-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.my-ticket-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid var(--hairline);
+}
+
+.my-ticket-row:first-child {
+    border-top: none;
+}
+
+.my-ticket-info {
+    color: var(--champagne);
+    font-size: 0.92rem;
+}
+
+.my-ticket-meta {
+    color: var(--muted);
+    font-size: 0.78rem;
+    margin-top: 0.2rem;
+}
+
+.my-ticket-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}

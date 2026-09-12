@@ -65,6 +65,23 @@ let CAPACITY = 32;
 let selectedRoute = 'Institute→Sadar';
 let bookings = JSON.parse(localStorage.getItem('bus-bookings') || '{}');
 
+function getMyTicketCodes() {
+    return JSON.parse(localStorage.getItem('bus-my-tickets') || '[]');
+}
+
+function addMyTicketCode(code) {
+    const codes = getMyTicketCodes();
+    if (!codes.includes(code)) {
+        codes.push(code);
+        localStorage.setItem('bus-my-tickets', JSON.stringify(codes));
+    }
+}
+
+function removeMyTicketCode(code) {
+    const codes = getMyTicketCodes().filter(c => c !== code);
+    localStorage.setItem('bus-my-tickets', JSON.stringify(codes));
+}
+
 function todayKey() {
     return new Date().toISOString().slice(0, 10);
 }
@@ -188,6 +205,111 @@ if (boardRows) {
     });
 }
 
+// ---- YOUR BOOKED TICKETS (on the bus board page) ----
+const myTicketsList = document.getElementById('myTicketsList');
+if (myTicketsList) {
+
+    function statusLabel(status) {
+        if (status === 'valid') return 'Booked';
+        if (status === 'checked_in') return 'Checked in';
+        if (status === 'cancelled') return 'Cancelled';
+        return status;
+    }
+
+    async function renderMyTickets() {
+        const codes = getMyTicketCodes();
+
+        if (codes.length === 0) {
+            myTicketsList.innerHTML = '<div class="empty-state">You haven\'t booked any tickets yet.</div>';
+            return;
+        }
+
+        const results = await Promise.all(codes.map(async code => {
+            try {
+                const res = await fetch(`/api/ticket/${code}`);
+                if (res.status === 404) return null; // stale/unknown code, drop it
+                const data = await res.json();
+                return data.error ? null : data;
+            } catch (e) {
+                return { code, error: true }; // network hiccup, keep the code, show as unavailable
+            }
+        }));
+
+        // Drop codes the server no longer recognizes.
+        results.forEach((t, i) => {
+            if (t === null) removeMyTicketCode(codes[i]);
+        });
+
+        const tickets = results.filter(t => t && !t.error);
+
+        if (tickets.length === 0) {
+            myTicketsList.innerHTML = '<div class="empty-state">You haven\'t booked any tickets yet.</div>';
+            return;
+        }
+
+        myTicketsList.innerHTML = tickets.map(t => `
+            <div class="my-ticket-row" data-code="${t.code}">
+                <div class="my-ticket-info">
+                    <strong>${formatTime(t.time)}</strong> · Bus ${t.bus} · ${t.route}
+                    <div class="my-ticket-meta">
+                        ${t.name} · ${t.rollNo} · <span style="font-family:'IBM Plex Mono', monospace;">${t.code}</span>
+                    </div>
+                </div>
+                <div class="my-ticket-actions">
+                    <span class="pill ${t.status}">${statusLabel(t.status)}</span>
+                    <a href="ticket.html?code=${t.code}" class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.78rem;">View</a>
+                    <button class="btn btn-danger my-cancel-btn" style="padding:0.4rem 0.8rem; font-size:0.78rem;"
+                        data-code="${t.code}" ${t.status !== 'valid' ? 'disabled' : ''}>
+                        ${t.status === 'valid' ? '✖ Cancel & Refund' : 'Unavailable'}
+                    </button>
+                </div>
+            </div>
+        `).join('');
+
+        myTicketsList.querySelectorAll('.my-cancel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.disabled) return;
+                if (!confirm('Cancel this ticket and refund the payment? This cannot be undone.')) return;
+
+                const code = btn.dataset.code;
+                btn.disabled = true;
+                btn.textContent = 'Cancelling...';
+
+                fetch('/api/cancel-ticket', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                            btn.disabled = false;
+                            btn.textContent = '✖ Cancel & Refund';
+                            return;
+                        }
+                        alert(data.message || 'Ticket cancelled and refund initiated.');
+                        renderMyTickets();
+                        loadTrips(); // refresh seat counts on the board
+                    })
+                    .catch(() => {
+                        alert('Could not reach the server to cancel this ticket.');
+                        btn.disabled = false;
+                        btn.textContent = '✖ Cancel & Refund';
+                    });
+            });
+        });
+    }
+
+    renderMyTickets();
+    setInterval(renderMyTickets, 30000);
+
+    const refreshLink = document.getElementById('myTicketsRefresh');
+    if (refreshLink) {
+        refreshLink.addEventListener('click', renderMyTickets);
+    }
+}
+
 // ---- BOOKING PAGE ----
 const bookingForm = document.getElementById('bookingForm');
 if (bookingForm) {
@@ -228,7 +350,7 @@ if (bookingForm) {
             const orderRes = await fetch('/api/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tripId })
+                body: JSON.stringify({ tripId, rollNo })
             });
             const orderData = await orderRes.json();
 
@@ -275,6 +397,7 @@ if (bookingForm) {
                     const dateKey = todayKey();
                     bookings[dateKey + tripId] = (bookings[dateKey + tripId] || 0) + 1;
                     localStorage.setItem('bus-bookings', JSON.stringify(bookings));
+                    addMyTicketCode(ticketData.code);
 
                     window.location.href = `ticket.html?code=${ticketData.code}`;
                 },
