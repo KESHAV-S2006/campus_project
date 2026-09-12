@@ -1,5 +1,0 @@
-Point out any mistakes in my folder structure or how I'm connecting static//templates/ to Flask.
-Check that my Razorpay API integration is correct and follows best practices (e.g., key handling, order creation, payment verification).
-Identify any unused, redundant, or dead code.
-If any code/logic can be simplified, consolidated, or merged into fewer files, please do that and explain the change.
-Give me a corrected/working version of the project along with a clear explanation of what was wrong and why.
