@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusConnect - Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-mark">CC</span>
+            <span>CampusConnect</span>
+        </div>
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-icon">👤</div>
+                <span id="userEmail">student@email.com</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+
+        <section class="welcome-section">
+            <h1>Welcome back.</h1>
+            <p class="subtitle">Every campus service lives in one directory — find it, open it, done.</p>
+
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search campus services...">
+            </div>
+        </section>
+
+        <div class="section-header">
+            <h2>Directory</h2>
+            <span id="serviceCount">8 services</span>
+        </div>
+
+        <div class="services-grid" id="servicesGrid">
+
+            <div class="service-card" data-name="lost found"
+                data-description="Find lost items or report something you found.">
+                <div class="card-header">
+                    <div class="service-icon">🔎</div>
+                    <span class="service-code">A1</span>
+                </div>
+                <div class="service-text">
+                    <h3>Lost &amp; Found</h3>
+                    <p>Find lost items or report something you found.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="room lab availability"
+                data-description="Check which rooms and labs are currently free.">
+                <div class="card-header">
+                    <div class="service-icon">🏫</div>
+                    <span class="service-code">A2</span>
+                </div>
+                <div class="service-text">
+                    <h3>Room / Lab Availability</h3>
+                    <p>Check which rooms and labs are currently free.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="bus booking"
+                data-description="Book your college to city bus ticket easily.">
+                <div class="card-header">
+                    <div class="service-icon">🚌</div>
+                    <span class="service-code">A3</span>
+                </div>
+                <div class="service-text">
+                    <h3>Bus Booking</h3>
+                    <p>Book your college → city bus ticket easily.</p>
+                </div>
+                <a href="avalableBUS.html">BOOK IT</a>
+            </div>
+
+            <div class="service-card" data-name="skill connect"
+                data-description="Find students who know a particular skill.">
+                <div class="card-header">
+                    <div class="service-icon">🛠️</div>
+                    <span class="service-code">B1</span>
+                </div>
+                <div class="service-text">
+                    <h3>Skill Connect</h3>
+                    <p>Find students who know a particular skill.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="campus events"
+                data-description="Discover upcoming events and activities.">
+                <div class="card-header">
+                    <div class="service-icon">🎉</div>
+                    <span class="service-code">B2</span>
+                </div>
+                <div class="service-text">
+                    <h3>Campus Events</h3>
+                    <p>Discover upcoming events and activities.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="campus chatbot"
+                data-description="Ask questions and get campus information.">
+                <div class="card-header">
+                    <div class="service-icon">🤖</div>
+                    <span class="service-code">B3</span>
+                </div>
+                <div class="service-text">
+                    <h3>Campus Chatbot</h3>
+                    <p>Ask questions and get campus information.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="hostel complaints"
+                data-description="Report and track your hostel complaints.">
+                <div class="card-header">
+                    <div class="service-icon">🏠</div>
+                    <span class="service-code">C1</span>
+                </div>
+                <div class="service-text">
+                    <h3>Hostel Complaints</h3>
+                    <p>Report and track your hostel complaints.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+            <div class="service-card" data-name="mess complaints"
+                data-description="Report and track mess-related issues.">
+                <div class="card-header">
+                    <div class="service-icon">🍽️</div>
+                    <span class="service-code">C2</span>
+                </div>
+                <div class="service-text">
+                    <h3>Mess Complaints</h3>
+                    <p>Report and track mess-related issues.</p>
+                </div>
+                <button class="open-btn">Open App</button>
+            </div>
+
+        </div>
+
+        <div class="no-result" id="noResult">
+            <h3>No service found</h3>
+            <p>Try searching for another campus app or keyword.</p>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2026 CampusConnect</p>
+        <p>Made for students, by students.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Ticket | IIITDM Bus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="bg-layer" aria-hidden="true"></div>
+
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">IIITDM Campus Shuttle</p>
+            <h1>Passenger Details</h1>
+        </div>
+        <a href="avalableBUS.html" class="tab" style="text-decoration:none;">← Back to Board</a>
+    </header>
+
+    <main>
+        <section class="board" style="padding: 1.5rem; max-width: 500px; margin: 0 auto;">
+            <!-- Trip Summary -->
+            <div id="tripSummary"
+                style="border-bottom: 1px solid var(--hairline); padding-bottom: 1rem; margin-bottom: 1.25rem;">
+                <p style="color: var(--muted); margin: 0 0 0.25rem;">Selected Trip</p>
+                <h3 id="summaryTime"
+                    style="color: var(--gold-bright); margin: 0; font-family: 'IBM Plex Mono', monospace;">--:--</h3>
+                <p id="summaryRoute" style="margin: 0.25rem 0 0; color: var(--champagne); font-weight: 500;"></p>
+            </div>
+
+            <!-- Passenger Form -->
+            <form id="bookingForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem;">Full
+                        Name</label>
+                    <input type="text" id="passengerName" required placeholder="e.g. Alex Sharma"
+                        style="width: 100%; padding: 0.65rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--hairline); border-radius: 6px; color: var(--ink); font-family: inherit;">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.35rem;">Roll
+                        Number</label>
+                    <input type="text" id="rollNo" required placeholder="e.g. 25bcs232" pattern="[a-zA-Z0-9]+"
+                        style="width: 100%; padding: 0.65rem 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid var(--hairline); border-radius: 6px; color: var(--ink); font-family: inherit; text-transform: uppercase;">
+                </div>
+
+                <button type="submit" class="action-btn book"
+                    style="margin-top: 0.5rem; padding: 0.75rem; font-size: 1rem;">
+                    Pay & Generate Ticket
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script src="booking.js"></script>
+</body>
+
+</html>
