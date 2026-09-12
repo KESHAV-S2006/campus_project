@@ -16,6 +16,13 @@ log = logging.getLogger('bus-booking')
 
 RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'test_key')
 RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'test_secret')
+
+if RAZORPAY_KEY_ID == 'test_key' or RAZORPAY_KEY_SECRET == 'test_secret':
+    logging.warning(
+        'RAZORPAY_KEY_ID or RAZORPAY_KEY_SECRET is not set — using placeholder values. '
+        'Set these in a .env file before accepting real payments.'
+    )
+
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
 # By default, Flask looks for templates in ./templates and static files in ./static.

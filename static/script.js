@@ -120,7 +120,8 @@ function render() {
     boardRows.innerHTML = '';
 
     rows.forEach(trip => {
-        const departed = false; // For testing, keep false
+        const nowMinutes = toMinutes(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
+        const departed = toMinutes(trip.time) < nowMinutes;
         const available = trip.available;
         const bookedByUser = bookings[dateKey + trip.id] || 0;
 
@@ -226,6 +227,7 @@ if (bookingForm) {
         try {
             const orderRes = await fetch('/api/create-order', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ tripId })
             });
             const orderData = await orderRes.json();
@@ -249,6 +251,7 @@ if (bookingForm) {
 
                     const verifyRes = await fetch('/api/verify-and-book', {
                         method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             tripId,
                             name,
