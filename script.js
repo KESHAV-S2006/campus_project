@@ -2,6 +2,10 @@
 // Two scribbled-out rows on Bus No. 2's weekday schedule were unreadable
 // in the source photo and are left out on purpose.
 
+
+
+
+
 //  HOME PAGE
 
 const searchInput = document.getElementById("searchInput");
@@ -218,5 +222,76 @@ if (boardRows) {
 
         const tripId = btn.dataset.trip;
         window.location.href = `booking.html?tripId=${tripId}`;
+    });
+}
+
+// ---- BOOKING PAGE (booking.html) ----
+// Fills in the trip summary, then "pays" and creates the ticket on submit.
+const bookingForm = document.getElementById('bookingForm');
+if (bookingForm) {
+    const ALL_TRIPS = [...WEEKDAY_TRIPS, ...WEEKEND_TRIPS];
+    const tripId = new URLSearchParams(window.location.search).get('tripId');
+    const trip = ALL_TRIPS.find(t => t.id === tripId);
+
+    if (!trip) {
+        alert('That trip could not be found. Please pick a trip again.');
+        window.location.href = 'avalableBUS.html';
+    } else {
+        document.getElementById('summaryTime').textContent = formatTime(trip.time);
+        document.getElementById('summaryRoute').textContent =
+            `Bus ${trip.bus} · ${trip.route} · ${trip.purpose}`;
+    }
+
+    bookingForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!trip) return;
+
+        const name = document.getElementById('passengerName').value.trim();
+        const rollNo = document.getElementById('rollNo').value.trim().toUpperCase();
+        if (!name || !rollNo) return;
+
+        // Re-check seats in case this trip filled up while the page was open
+        const dateKey = todayKey();
+        const takenBase = seededSeatsTaken(trip.id, dateKey);
+        const bookedByUser = bookings[dateKey + trip.id] || 0;
+        const available = CAPACITY - Math.min(CAPACITY, takenBase + bookedByUser);
+
+        if (available <= 0) {
+            alert('Sorry, this trip just filled up. Please pick another one.');
+            window.location.href = 'avalableBUS.html';
+            return;
+        }
+
+        // ---- Payment step ----
+        // A real Razorpay checkout needs a backend (to create an order and
+        // verify payment with a secret key), which a plain HTML/CSS/JS site
+        // doesn't have. This simulates that "pay, then confirm" step so the
+        // whole booking flow works end-to-end. Swap this block for
+        // Razorpay's Checkout.js once a backend is added.
+        const payBtn = bookingForm.querySelector('button[type="submit"]');
+        payBtn.disabled = true;
+        payBtn.textContent = 'Processing payment...';
+
+        setTimeout(() => {
+            // Reserve the seat
+            bookings[dateKey + trip.id] = bookedByUser + 1;
+            localStorage.setItem('bus-bookings', JSON.stringify(bookings));
+
+            // Generate the ticket
+            const code = 'IIITDM' + Math.random().toString(36).slice(2, 8).toUpperCase();
+            const tickets = JSON.parse(localStorage.getItem('issued-tickets') || '{}');
+            tickets[code] = {
+                code,
+                name,
+                rollNo,
+                route: trip.route,
+                bus: trip.bus,
+                time: formatTime(trip.time),
+                date: new Date().toDateString()
+            };
+            localStorage.setItem('issued-tickets', JSON.stringify(tickets));
+
+            window.location.href = `ticket.html?code=${code}`;
+        }, 1200);
     });
 }

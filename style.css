@@ -7,17 +7,17 @@
 }
 
 :root {
-    --bg-base: #090a0f;
-    --card-bg: rgba(20, 22, 30, 0.6);
-    --card-border: rgba(255, 255, 255, 0.08);
-    --text-main: #f4f5f7;
-    --text-muted: #9ba1b0;
+    --bg-base: #05060A;
+    --card-bg: rgba(23, 27, 40, 0.55);
+    --card-border: rgba(216, 180, 99, 0.16);
+    --text-main: #EDEBE4;
+    --text-muted: #8C8FA0;
 
-    /* Rich Gradients */
-    --brand-grad: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-    --accent-grad: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --warm-grad: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-    --glow-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    /* Rich Gradients — matches the gold/emerald/garnet palette used across the site */
+    --brand-grad: linear-gradient(135deg, #D8B463 0%, #F1CE82 100%);
+    --accent-grad: linear-gradient(135deg, #3FAE8A 0%, #5DCCA6 100%);
+    --warm-grad: linear-gradient(135deg, #C4536B 0%, #D8B463 100%);
+    --glow-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -46,7 +46,7 @@ body::before {
     left: -10%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(142, 197, 252, 0.4), transparent 70%);
+    background: radial-gradient(circle, rgba(216, 180, 99, 0.35), transparent 70%);
 }
 
 body::after {
@@ -54,7 +54,7 @@ body::after {
     right: -10%;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(224, 195, 252, 0.3), transparent 70%);
+    background: radial-gradient(circle, rgba(63, 174, 138, 0.25), transparent 70%);
     animation-delay: -5s;
 }
 
@@ -71,7 +71,7 @@ body::after {
 h1,
 h2,
 .serif {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Fraunces', Georgia, serif;
 }
 
 /* ================= NAVBAR ================= */
@@ -94,7 +94,7 @@ h2,
     display: flex;
     align-items: center;
     gap: 12px;
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Fraunces', Georgia, serif;
     font-size: 24px;
     font-weight: 600;
 }
@@ -111,7 +111,7 @@ h2,
     font-size: 16px;
     font-weight: 600;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(142, 197, 252, 0.3);
+    box-shadow: 0 4px 15px rgba(216, 180, 99, 0.35);
 }
 
 .user-section {
@@ -156,7 +156,7 @@ h2,
     background: var(--brand-grad);
     color: var(--bg-base);
     border-color: transparent;
-    box-shadow: 0 4px 15px rgba(224, 195, 252, 0.4);
+    box-shadow: 0 4px 15px rgba(216, 180, 99, 0.4);
 }
 
 /* ================= CONTAINER ================= */
@@ -210,8 +210,8 @@ h2,
 }
 
 .search-box:focus-within {
-    border-color: rgba(142, 197, 252, 0.5);
-    box-shadow: 0 0 25px rgba(142, 197, 252, 0.15);
+    border-color: rgba(216, 180, 99, 0.5);
+    box-shadow: 0 0 25px rgba(216, 180, 99, 0.15);
 }
 
 .search-icon {
@@ -285,15 +285,15 @@ h2,
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, rgba(142, 197, 252, 0.05) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(216, 180, 99, 0.06) 0%, transparent 100%);
     opacity: 0;
     transition: opacity 0.4s ease;
 }
 
 .service-card:hover {
     transform: translateY(-8px);
-    border-color: rgba(142, 197, 252, 0.4);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(142, 197, 252, 0.1);
+    border-color: rgba(216, 180, 99, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(216, 180, 99, 0.12);
 }
 
 .service-card:hover::before {
@@ -329,7 +329,7 @@ h2,
 }
 
 .service-code {
-    font-family: 'IBM Plex Sans', monospace;
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
@@ -362,7 +362,7 @@ h2,
     margin-top: auto;
     border: none;
     background: transparent;
-    color: #8ec5fc;
+    color: var(--gold-bright, #F1CE82);
     font-family: 'IBM Plex Sans', Arial, sans-serif;
     font-size: 15px;
     font-weight: 600;
@@ -383,7 +383,7 @@ h2,
 
 .service-card:hover .open-btn {
     gap: 12px;
-    color: #e0c3fc;
+    color: var(--gold, #D8B463);
 }
 
 /* ================= NO RESULT ================= */
@@ -402,7 +402,7 @@ h2,
 }
 
 .no-result h3 {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Fraunces', Georgia, serif;
     font-size: 24px;
     margin-bottom: 12px;
 }
