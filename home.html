@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusConnect - Home</title>
+
+    <link rel="stylesheet" href="sty.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="logo">
+            <span class="logo-icon">🎓</span>
+            <span>CampusConnect</span>
+        </div>
+
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-icon">👤</div>
+                <span id="userEmail">student@email.com</span>
+            </div>
+
+            <button class="logout-btn" id="logoutBtn">
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <!-- Main Content -->
+    <main class="container">
+
+        <!-- Welcome -->
+        <section class="welcome-section">
+
+            <p class="dashboard-label">
+                STUDENT DASHBOARD
+            </p>
+
+            <h1>
+                Welcome back! 👋
+            </h1>
+
+            <p class="subtitle">
+                Your campus, connected in one place.
+            </p>
+
+        </section>
+
+
+        <!-- Search -->
+        <div class="search-box">
+
+            <span class="search-icon">🔍</span>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search campus services..."
+            >
+
+        </div>
+
+
+        <!-- Campus Services -->
+        <section class="services-section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Campus Services</h2>
+
+                    <p>
+                        Everything you need, just one click away.
+                    </p>
+                </div>
+
+                <span id="serviceCount">
+                    8 services
+                </span>
+
+            </div>
+
+
+            <!-- Service Cards -->
+            <div class="services-grid" id="servicesGrid">
+
+
+                <!-- Lost & Found -->
+                <div class="service-card" data-name="lost found">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🔎
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Lost & Found
+                    </h3>
+
+                    <p>
+                        Find lost items or report something you found.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Room / Lab -->
+                <div class="service-card" data-name="room lab availability">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🏫
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Room / Lab Availability
+                    </h3>
+
+                    <p>
+                        Check which rooms and labs are currently free.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Bus Booking -->
+                <div class="service-card" data-name="bus booking">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🚌
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Bus Booking
+                    </h3>
+
+                    <p>
+                        Book your college → city bus ticket easily.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Skill Connect -->
+                <div class="service-card" data-name="skill connect">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🛠️
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Skill Connect
+                    </h3>
+
+                    <p>
+                        Find students who know a particular skill.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Events -->
+                <div class="service-card" data-name="campus events">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🎉
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Campus Events
+                    </h3>
+
+                    <p>
+                        Discover upcoming events and activities.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Chatbot -->
+                <div class="service-card" data-name="campus chatbot">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🤖
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Campus Chatbot
+                    </h3>
+
+                    <p>
+                        Ask questions and get campus information.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Hostel -->
+                <div class="service-card" data-name="hostel complaints">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🏠
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Hostel Complaints
+                    </h3>
+
+                    <p>
+                        Report and track your hostel complaints.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+
+                <!-- Mess -->
+                <div class="service-card" data-name="mess complaints">
+
+                    <div class="card-top">
+
+                        <div class="service-icon">
+                            🍽️
+                        </div>
+
+                        <span class="arrow">
+                            ↗
+                        </span>
+
+                    </div>
+
+                    <h3>
+                        Mess Complaints
+                    </h3>
+
+                    <p>
+                        Report and track mess-related issues.
+                    </p>
+
+                    <button class="open-btn">
+                        Open <span>→</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- No Result -->
+            <div class="no-result" id="noResult">
+
+                <div>🔍</div>
+
+                <h3>
+                    No service found
+                </h3>
+
+                <p>
+                    Try searching for another campus service.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            © 2026 CampusConnect
+        </p>
+
+        <p>
+            Made for students, by students.
+        </p>
+    </footer>
+    <script src="scr.js"></script>
+</body>
+
+</html>
