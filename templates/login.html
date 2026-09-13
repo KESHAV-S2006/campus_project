@@ -687,26 +687,46 @@
             }
         }
 
-        // Added event listener to check domain before form submission
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            const emailInput = document.getElementById('rollno').value.trim();
-            const allowedDomain = '@iiitdmj.ac.in';
-            const loginError = document.getElementById('loginError');
+        const form = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
 
-            if (!emailInput.endsWith(allowedDomain)) {
-                // Prevent form from actually submitting to the server
+        if (form) {
+            form.addEventListener('submit', async function (event) {
                 event.preventDefault();
 
-                // Show the error message
-                loginError.textContent = 'Access denied. You must use an @iiitdmj.ac.in email address to sign in.';
-                loginError.style.display = 'block';
-            }
-        });
+                const email = document.getElementById('username').value.trim().toLowerCase();
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    loginError.textContent = 'Please enter your college email and password.';
+                    loginError.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        loginError.textContent = data.error || 'Invalid email or password.';
+                        loginError.style.display = 'block';
+                        return;
+                    }
+
+                    window.location.href = '/';
+                } catch (error) {
+                    loginError.textContent = 'Unable to reach the server. Please try again.';
+                    loginError.style.display = 'block';
+                }
+            });
+        }
 
         const params = new URLSearchParams(window.location.search);
         const error = params.get('error');
-        const loginError = document.getElementById('loginError');
-
         const messages = {
             invalid: 'Invalid email or password.',
             empty: 'Please enter your email and password.',

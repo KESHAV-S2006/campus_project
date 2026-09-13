@@ -1,5 +1,4 @@
-//  HOME PAGE
-
+// HOME PAGE
 const searchInput = document.getElementById("searchInput");
 const cards = document.querySelectorAll(".service-card");
 const serviceCount = document.getElementById("serviceCount");
@@ -10,9 +9,9 @@ function filterServices() {
     const query = searchInput.value.toLowerCase().trim();
     let visibleCards = 0;
 
-    cards.forEach(card => {
-        const name = card.dataset.name.toLowerCase();
-        const description = card.dataset.description.toLowerCase();
+    cards.forEach((card) => {
+        const name = (card.dataset.name || "").toLowerCase();
+        const description = (card.dataset.description || "").toLowerCase();
         const matches = name.includes(query) || description.includes(query);
 
         card.style.display = matches ? "flex" : "none";
@@ -20,9 +19,7 @@ function filterServices() {
     });
 
     if (serviceCount) {
-        serviceCount.textContent = visibleCards === 1
-            ? "1 service found"
-            : `${visibleCards} services found`;
+        serviceCount.textContent = visibleCards === 1 ? "1 service found" : `${visibleCards} services found`;
     }
 
     if (noResult) {
@@ -37,7 +34,7 @@ if (searchInput) {
     });
 }
 
-cards.forEach(card => {
+cards.forEach((card) => {
     card.addEventListener("click", function () {
         if (this.dataset.href) {
             window.location.href = this.dataset.href;
@@ -50,41 +47,49 @@ cards.forEach(card => {
 
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-        if (confirm("Are you sure you want to log out of your session?")) {
-            window.location.href = "login.html";
+    logoutBtn.addEventListener("click", async function () {
+        if (!confirm("Are you sure you want to log out of your session?")) return;
+
+        try {
+            await fetch('/api/logout', { method: 'POST' });
+        } catch (error) {
+            console.error('Logout error', error);
         }
+
+        window.location.href = 'login.html';
     });
+}
+
+async function loadCurrentUser() {
+    const userEmail = document.getElementById('userEmail');
+    if (!userEmail) return;
+
+    try {
+        const res = await fetch('/api/me');
+        const data = await res.json();
+
+        if (!data.loggedIn) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        userEmail.textContent = data.email || 'student@email.com';
+    } catch (error) {
+        console.error('User session lookup failed', error);
+        window.location.href = 'login.html';
+    }
+}
+
+if (document.getElementById('userEmail')) {
+    loadCurrentUser();
 }
 
 // BUS BOOKING - GLOBALS
 let WEEKDAY_TRIPS = [];
 let WEEKEND_TRIPS = [];
 let CAPACITY = 32;
-
 let selectedRoute = 'Institute→Sadar';
-let bookings = JSON.parse(localStorage.getItem('bus-bookings') || '{}');
-
-function getMyTicketCodes() {
-    return JSON.parse(localStorage.getItem('bus-my-tickets') || '[]');
-}
-
-function addMyTicketCode(code) {
-    const codes = getMyTicketCodes();
-    if (!codes.includes(code)) {
-        codes.push(code);
-        localStorage.setItem('bus-my-tickets', JSON.stringify(codes));
-    }
-}
-
-function removeMyTicketCode(code) {
-    const codes = getMyTicketCodes().filter(c => c !== code);
-    localStorage.setItem('bus-my-tickets', JSON.stringify(codes));
-}
-
-function todayKey() {
-    return new Date().toISOString().slice(0, 10);
-}
+let myTickets = [];
 
 function isWeekend(date) {
     const d = date.getDay();
@@ -103,25 +108,46 @@ function formatTime(hhmm) {
     return `${h12}:${String(m).padStart(2, '0')} ${period}`;
 }
 
+async function loadMyTickets() {
+    try {
+        const res = await fetch('/api/my-tickets');
+        if (res.status === 401) {
+            window.location.href = 'login.html';
+            return;
+        }
+        const data = await res.json();
+        myTickets = Array.isArray(data.tickets) ? data.tickets : [];
+    } catch (error) {
+        console.error('Failed to load user tickets', error);
+        myTickets = [];
+    }
+}
+
 async function loadTrips() {
     try {
         const res = await fetch('/api/trips');
+        if (res.status === 401) {
+            window.location.href = 'login.html';
+            return;
+        }
+
         const data = await res.json();
         WEEKDAY_TRIPS = data.weekday;
         WEEKEND_TRIPS = data.weekend;
         if (WEEKDAY_TRIPS.length > 0) CAPACITY = WEEKDAY_TRIPS[0].capacity;
+
+        await loadMyTickets();
         render();
     } catch (e) {
-        console.error("Failed to load trips", e);
+        console.error('Failed to load trips', e);
     }
 }
 
 function render() {
     const boardRows = document.getElementById('boardRows');
-    if (!boardRows) return; // not on board page
+    if (!boardRows) return;
 
     const now = new Date();
-    const dateKey = todayKey();
     const weekend = isWeekend(now);
     const trips = weekend ? WEEKEND_TRIPS : WEEKDAY_TRIPS;
 
@@ -131,21 +157,22 @@ function render() {
     if (dateLabel) dateLabel.textContent = now.toDateString();
 
     const rows = trips
-        .filter(t => t.route === selectedRoute)
+        .filter((t) => t.route === selectedRoute)
         .sort((a, b) => toMinutes(a.time) - toMinutes(b.time));
 
     boardRows.innerHTML = '';
 
-    rows.forEach(trip => {
+    rows.forEach((trip) => {
         const nowMinutes = toMinutes(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }));
         const departed = toMinutes(trip.time) < nowMinutes;
         const available = trip.available;
-        const bookedByUser = bookings[dateKey + trip.id] || 0;
+        const bookedByUser = myTickets.some((ticket) => ticket.tripId === trip.id && ['valid', 'checked_in'].includes(ticket.status));
 
         const row = document.createElement('div');
         row.className = 'row';
 
         const busClass = trip.bus === 1 ? 'bus1' : 'bus2';
+        const buttonDisabled = departed || available <= 0 || bookedByUser;
 
         row.innerHTML = `
       <div class="time">${formatTime(trip.time)}</div>
@@ -158,10 +185,10 @@ function render() {
         <span>${departed ? '—' : available + ' / ' + CAPACITY}</span>
         <div class="seat-bar"><div class="seat-bar-fill" style="width:${departed ? 0 : (available / CAPACITY * 100)}%"></div></div>
       </div>
-      <button class="action-btn ${departed ? 'departed' : (available <= 0 ? 'full' : (bookedByUser > 0 ? 'booked' : 'book'))}"
-              ${departed || available <= 0 ? 'disabled' : ''}
+      <button class="action-btn ${departed ? 'departed' : (available <= 0 ? 'full' : (bookedByUser ? 'booked' : 'book'))}"
+              ${buttonDisabled ? 'disabled' : ''}
               data-trip="${trip.id}">
-        ${departed ? 'Departed' : (available <= 0 ? 'Full' : (bookedByUser > 0 ? 'Booked ✓' : 'Book seat'))}
+        ${departed ? 'Departed' : (available <= 0 ? 'Full' : (bookedByUser ? 'Booked ✓' : 'Book seat'))}
       </button>
     `;
         boardRows.appendChild(row);
@@ -177,7 +204,7 @@ if (routeTabs) {
     routeTabs.addEventListener('click', (e) => {
         const tab = e.target.closest('.tab');
         if (!tab) return;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
         tab.classList.add('active');
         selectedRoute = tab.dataset.route;
         render();
@@ -205,10 +232,8 @@ if (boardRows) {
     });
 }
 
-// ---- YOUR BOOKED TICKETS (on the bus board page) ----
 const myTicketsList = document.getElementById('myTicketsList');
 if (myTicketsList) {
-
     function statusLabel(status) {
         if (status === 'valid') return 'Booked';
         if (status === 'checked_in') return 'Checked in';
@@ -217,88 +242,79 @@ if (myTicketsList) {
     }
 
     async function renderMyTickets() {
-        const codes = getMyTicketCodes();
-
-        if (codes.length === 0) {
-            myTicketsList.innerHTML = '<div class="empty-state">You haven\'t booked any tickets yet.</div>';
-            return;
-        }
-
-        const results = await Promise.all(codes.map(async code => {
-            try {
-                const res = await fetch(`/api/ticket/${code}`);
-                if (res.status === 404) return null; // stale/unknown code, drop it
-                const data = await res.json();
-                return data.error ? null : data;
-            } catch (e) {
-                return { code, error: true }; // network hiccup, keep the code, show as unavailable
+        try {
+            const res = await fetch('/api/my-tickets');
+            if (res.status === 401) {
+                window.location.href = 'login.html';
+                return;
             }
-        }));
 
-        // Drop codes the server no longer recognizes.
-        results.forEach((t, i) => {
-            if (t === null) removeMyTicketCode(codes[i]);
-        });
+            const data = await res.json();
+            const tickets = Array.isArray(data.tickets) ? data.tickets : [];
 
-        const tickets = results.filter(t => t && !t.error);
+            if (tickets.length === 0) {
+                myTicketsList.innerHTML = '<div class="empty-state">You haven\'t booked any tickets yet.</div>';
+                return;
+            }
 
-        if (tickets.length === 0) {
-            myTicketsList.innerHTML = '<div class="empty-state">You haven\'t booked any tickets yet.</div>';
-            return;
-        }
-
-        myTicketsList.innerHTML = tickets.map(t => `
-            <div class="my-ticket-row" data-code="${t.code}">
-                <div class="my-ticket-info">
-                    <strong>${formatTime(t.time)}</strong> · Bus ${t.bus} · ${t.route}
-                    <div class="my-ticket-meta">
-                        ${t.name} · ${t.rollNo} · <span style="font-family:'IBM Plex Mono', monospace;">${t.code}</span>
+            myTicketsList.innerHTML = tickets.map((t) => `
+                <div class="my-ticket-row" data-code="${t.code}">
+                    <div class="my-ticket-info">
+                        <strong>${formatTime(t.time)}</strong> · Bus ${t.bus} · ${t.route}
+                        <div class="my-ticket-meta">
+                            ${t.name} · ${t.rollNo} · <span style="font-family:'IBM Plex Mono', monospace;">${t.code}</span>
+                        </div>
+                    </div>
+                    <div class="my-ticket-actions">
+                        <span class="pill ${t.status}">${statusLabel(t.status)}</span>
+                        <a href="ticket.html?code=${t.code}" class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.78rem;">View</a>
+                        <button class="btn btn-danger my-cancel-btn" style="padding:0.4rem 0.8rem; font-size:0.78rem;"
+                            data-code="${t.code}" ${t.status !== 'valid' ? 'disabled' : ''}>
+                            ${t.status === 'valid' ? '✖ Cancel & Refund' : 'Unavailable'}
+                        </button>
                     </div>
                 </div>
-                <div class="my-ticket-actions">
-                    <span class="pill ${t.status}">${statusLabel(t.status)}</span>
-                    <a href="ticket.html?code=${t.code}" class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.78rem;">View</a>
-                    <button class="btn btn-danger my-cancel-btn" style="padding:0.4rem 0.8rem; font-size:0.78rem;"
-                        data-code="${t.code}" ${t.status !== 'valid' ? 'disabled' : ''}>
-                        ${t.status === 'valid' ? '✖ Cancel & Refund' : 'Unavailable'}
-                    </button>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
 
-        myTicketsList.querySelectorAll('.my-cancel-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (btn.disabled) return;
-                if (!confirm('Cancel this ticket and refund the payment? This cannot be undone.')) return;
+            myTicketsList.querySelectorAll('.my-cancel-btn').forEach((btn) => {
+                btn.addEventListener('click', async () => {
+                    if (btn.disabled) return;
+                    if (!confirm('Cancel this ticket and refund the payment? This cannot be undone.')) return;
 
-                const code = btn.dataset.code;
-                btn.disabled = true;
-                btn.textContent = 'Cancelling...';
+                    const code = btn.dataset.code;
+                    btn.disabled = true;
+                    btn.textContent = 'Cancelling...';
 
-                fetch('/api/cancel-ticket', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code })
-                })
-                    .then(res => res.json())
-                    .then(data => {
+                    try {
+                        const res = await fetch('/api/cancel-ticket', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code })
+                        });
+                        const data = await res.json();
+
                         if (data.error) {
                             alert(data.error);
                             btn.disabled = false;
                             btn.textContent = '✖ Cancel & Refund';
                             return;
                         }
+
                         alert(data.message || 'Ticket cancelled and refund initiated.');
-                        renderMyTickets();
-                        loadTrips(); // refresh seat counts on the board
-                    })
-                    .catch(() => {
+                        await loadTrips();
+                        await renderMyTickets();
+                    } catch (error) {
+                        console.error('Cancel request failed', error);
                         alert('Could not reach the server to cancel this ticket.');
                         btn.disabled = false;
                         btn.textContent = '✖ Cancel & Refund';
-                    });
+                    }
+                });
             });
-        });
+        } catch (error) {
+            console.error('Failed to render tickets', error);
+            myTicketsList.innerHTML = '<div class="empty-state">Could not load your tickets.</div>';
+        }
     }
 
     renderMyTickets();
@@ -310,16 +326,20 @@ if (myTicketsList) {
     }
 }
 
-// ---- BOOKING PAGE ----
 const bookingForm = document.getElementById('bookingForm');
 if (bookingForm) {
     const tripId = new URLSearchParams(window.location.search).get('tripId');
     let trip = null;
 
-    // Fetch this specific trip
     fetch(`/api/trip/${tripId}`)
-        .then(res => res.json())
-        .then(data => {
+        .then((res) => {
+            if (res.status === 401) {
+                window.location.href = 'login.html';
+                return res.json();
+            }
+            return res.json();
+        })
+        .then((data) => {
             if (data.error) {
                 alert('That trip could not be found. Please pick a trip again.');
                 window.location.href = 'avalableBUS.html';
@@ -329,7 +349,7 @@ if (bookingForm) {
             document.getElementById('summaryTime').textContent = formatTime(trip.time);
             document.getElementById('summaryRoute').textContent = `Bus ${trip.bus} · ${trip.route} · ${trip.purpose}`;
         })
-        .catch(err => {
+        .catch((err) => {
             alert('Error loading trip details.');
             console.error(err);
         });
@@ -355,7 +375,7 @@ if (bookingForm) {
             const orderData = await orderRes.json();
 
             if (orderRes.status === 409) {
-                alert('Sorry, this trip just filled up. Please pick another one.');
+                alert('Sorry, this trip is no longer available. Please pick another one.');
                 window.location.href = 'avalableBUS.html';
                 return;
             }
@@ -393,17 +413,9 @@ if (bookingForm) {
                     }
                     if (ticketData.error) throw new Error(ticketData.error);
 
-                    // Success, mark in local storage and redirect
-                    const dateKey = todayKey();
-                    bookings[dateKey + tripId] = (bookings[dateKey + tripId] || 0) + 1;
-                    localStorage.setItem('bus-bookings', JSON.stringify(bookings));
-                    addMyTicketCode(ticketData.code);
-
                     window.location.href = `ticket.html?code=${ticketData.code}`;
                 },
-                theme: {
-                    color: '#FFCC00'
-                }
+                theme: { color: '#FFCC00' }
             };
 
             const rzp = new window.Razorpay(options);
