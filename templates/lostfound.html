@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost &amp; Found - CampusConnect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a class="logo" href="home.html">
+            <span class="logo-mark">CC</span>
+            <span>CampusConnect</span>
+        </a>
+        <div class="user-section">
+            <a class="lf-home-btn" href="home.html">🏠 Back to Home</a>
+            <div class="user-info">
+                <div class="user-icon">👤</div>
+                <span id="userEmail">student@email.com</span>
+            </div>
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </nav>
+
+    <main class="lf-container">
+
+        <a class="lf-back" href="home.html">← Directory</a>
+
+        <section class="lf-hero">
+            <span class="lf-eyebrow">A1 · Lost &amp; Found</span>
+            <h1>Find what you lost.<br>Return what you found.</h1>
+            <p class="lf-sub">Every report goes straight to the students looking, no notice
+                board required.</p>
+
+            <div class="lf-actions">
+                <button class="lf-action-card lf-action-lost" id="openLostForm">
+                    <span class="lf-action-icon">🔴</span>
+                    <span class="lf-action-text">
+                        <strong>Lost something?</strong>
+                        <em>Report it and we'll flag anyone who finds it.</em>
+                    </span>
+                    <span class="lf-action-cta">Report Lost</span>
+                </button>
+                <button class="lf-action-card lf-action-found" id="openFoundForm">
+                    <span class="lf-action-icon">🟢</span>
+                    <span class="lf-action-text">
+                        <strong>Found something?</strong>
+                        <em>Log it so the owner can track it down.</em>
+                    </span>
+                    <span class="lf-action-cta">Report Found</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="lf-list-section">
+            <div class="lf-list-header">
+                <h2><span class="lf-dot lf-dot-lost"></span>Lost items</h2>
+                <span class="lf-count" id="lostCount">0 reported</span>
+            </div>
+            <div class="lf-cards" id="lostList"></div>
+            <p class="lf-empty" id="lostEmpty">Nothing reported lost right now.</p>
+        </section>
+
+        <section class="lf-list-section">
+            <div class="lf-list-header">
+                <h2><span class="lf-dot lf-dot-found"></span>Found items</h2>
+                <span class="lf-count" id="foundCount">0 reported</span>
+            </div>
+            <div class="lf-cards" id="foundList"></div>
+            <p class="lf-empty" id="foundEmpty">Nothing handed in right now.</p>
+        </section>
+
+        <section class="lf-list-section">
+            <div class="lf-list-header">
+                <h2><span class="lf-dot lf-dot-history"></span>Handover history</h2>
+                <span class="lf-count" id="historyCount">0 items</span>
+            </div>
+            <div class="lf-cards" id="historyList"></div>
+            <p class="lf-empty" id="historyEmpty">No items handed over yet.</p>
+        </section>
+
+        <div class="lf-home-btn-wrap">
+            <a class="lf-home-btn" href="home.html">🏠 Back to Home</a>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2026 CampusConnect</p>
+        <p>Made for students, by students.</p>
+    </footer>
+
+    <!-- Report Lost modal -->
+    <div class="lf-overlay" id="lostOverlay">
+        <form class="lf-modal" id="lostForm">
+            <div class="lf-modal-head">
+                <h3>Report a lost item</h3>
+                <button type="button" class="lf-close" data-close="lostOverlay">✕</button>
+            </div>
+            <label>Item name
+                <input type="text" name="item" placeholder="e.g. Mobile phone" required>
+            </label>
+            <label>Last seen near
+                <input type="text" name="location" placeholder="e.g. Library" required>
+            </label>
+            <label>Exact Date/Time Lost
+                <input type="datetime-local" name="exactDate">
+            </label>
+            <label>Item Photo (optional)
+                <input type="file" name="photo" accept="image/*" capture="environment">
+            </label>
+            <div class="lf-photo-preview" id="lostPhotoPreview"></div>
+            <label>Description
+                <textarea name="description" rows="3" placeholder="Color, brand, marks..." required></textarea>
+            </label>
+            <label>Your contact number
+                <input type="tel" name="contact" placeholder="98XXXXXXXX" required pattern="[0-9]{10}">
+            </label>
+            <button type="submit" class="lf-submit lf-submit-lost">Post lost report</button>
+        </form>
+    </div>
+
+    <!-- Report Found modal -->
+    <div class="lf-overlay" id="foundOverlay">
+        <form class="lf-modal" id="foundForm">
+            <div class="lf-modal-head">
+                <h3>Report a found item</h3>
+                <button type="button" class="lf-close" data-close="foundOverlay">✕</button>
+            </div>
+            <label>Item name
+                <input type="text" name="item" placeholder="e.g. Wireless earbuds" required>
+            </label>
+            <label>Found near
+                <input type="text" name="location" placeholder="e.g. CSE Block" required>
+            </label>
+            <label>Exact Date/Time Found
+                <input type="datetime-local" name="exactDate">
+            </label>
+            <label>Item Photo (optional)
+                <input type="file" name="photo" accept="image/*" capture="environment">
+            </label>
+            <div class="lf-photo-preview" id="foundPhotoPreview"></div>
+            <label>Description
+                <textarea name="description" rows="3" placeholder="Color, brand, marks..." required></textarea>
+            </label>
+            <label>Your contact number
+                <input type="tel" name="contact" placeholder="98XXXXXXXX" required pattern="[0-9]{10}">
+            </label>
+            <button type="submit" class="lf-submit lf-submit-found">Post found report</button>
+        </form>
+    </div>
+
+    <!-- Item detail modal -->
+    <div class="lf-overlay" id="detailOverlay">
+        <div class="lf-modal" id="detailModal">
+            <div class="lf-modal-head">
+                <h3 id="detailTitle">Item</h3>
+                <button type="button" class="lf-close" data-close="detailOverlay">✕</button>
+            </div>
+            <div class="lf-photo-preview" id="detailImage" style="display: none; margin-bottom: 10px;"></div>
+            <dl class="lf-detail-grid" id="detailBody"></dl>
+            <div class="lf-item-actions" id="detailActions" style="display: none; margin-top: 14px;"></div>
+        </div>
+    </div>
+
+    <!-- Claim / handover modal -->
+    <div class="lf-overlay" id="claimOverlay">
+        <form class="lf-modal" id="claimForm">
+            <div class="lf-modal-head">
+                <h3>Mark item as given</h3>
+                <button type="button" class="lf-close" data-close="claimOverlay">✕</button>
+            </div>
+            <p class="lf-claim-item" id="claimItemLabel"></p>
+            <label>Claimed by (full name)
+                <input type="text" name="claimantName" placeholder="Person taking the item" required>
+            </label>
+            <label>Claimant's ID card photo
+                <input type="file" name="idCard" accept="image/*" capture="environment" required>
+            </label>
+            <div class="lf-photo-preview" id="claimPhotoPreview"></div>
+            <button type="submit" class="lf-submit lf-submit-found">Confirm handover</button>
+        </form>
+    </div>
+
+    <script src="/static/lostFound.js"></script>
+</body>
+
+</html>

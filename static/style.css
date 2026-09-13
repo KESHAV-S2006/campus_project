@@ -7,7 +7,7 @@
 }
 
 :root {
-    --bg-base: #05060A;
+    --bg-base: #130623;
     --card-bg: rgba(23, 27, 40, 0.55);
     --card-border: rgba(216, 180, 99, 0.16);
     --text-main: #EDEBE4;
@@ -475,7 +475,7 @@ footer p:first-child {
 
 /* BOOK TICKET  */
 :root {
-    --void: #05060A;
+    --void: #130623;
     --charcoal: #0C0F17;
     --panel: #12151F;
     --panel-2: #171B28;
@@ -1081,4 +1081,455 @@ footer {
     align-items: center;
     gap: 0.6rem;
     flex-wrap: wrap;
+}
+
+
+/* LOST & FOUND (merged from lostFound.css) */
+
+/* Lost & Found — companion stylesheet, loaded after /static/style.css */
+
+:root {
+    --lf-ink: #182338;
+    --lf-ink-soft: #4b5568;
+    --lf-paper: #f6f5f1;
+    --lf-card: #ffffff;
+    --lf-line: #e2e0d8;
+    --lf-lost: #b4472b;
+    --lf-lost-bg: #fbebe5;
+    --lf-found: #3f7a54;
+    --lf-found-bg: #e8f2ea;
+    --lf-radius: 14px;
+    font-synthesis: none;
+}
+
+.lf-container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    color: var(--lf-ink);
+}
+
+.lf-back {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--lf-ink-soft);
+    text-decoration: none;
+    margin-bottom: 28px;
+}
+
+.lf-back:hover {
+    color: var(--lf-ink);
+}
+
+/* Hero */
+.lf-hero {
+    padding-bottom: 36px;
+    border-bottom: 1px solid var(--lf-line);
+    margin-bottom: 40px;
+}
+
+.lf-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--lf-ink-soft);
+    letter-spacing: 0.02em;
+}
+
+.lf-hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    line-height: 1.15;
+    margin: 12px 0 10px;
+}
+
+.lf-sub {
+    color: var(--lf-ink-soft);
+    max-width: 42ch;
+    line-height: 1.5;
+    margin: 0 0 28px;
+}
+
+.lf-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.lf-action-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+    background: var(--lf-card);
+    border: 1px solid var(--lf-line);
+    border-radius: var(--lf-radius);
+    padding: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.lf-action-card:hover {
+    transform: translateY(-2px);
+}
+
+.lf-action-lost:hover {
+    border-color: var(--lf-lost);
+}
+
+.lf-action-found:hover {
+    border-color: var(--lf-found);
+}
+
+.lf-action-icon {
+    font-size: 1.3rem;
+}
+
+.lf-action-text strong {
+    display: block;
+    font-size: 1.05rem;
+}
+
+.lf-action-text em {
+    display: block;
+    font-style: normal;
+    font-size: 0.85rem;
+    color: var(--lf-ink-soft);
+    margin-top: 2px;
+}
+
+.lf-action-cta {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.lf-action-lost .lf-action-cta {
+    color: var(--lf-lost);
+}
+
+.lf-action-found .lf-action-cta {
+    color: var(--lf-found);
+}
+
+/* List sections */
+.lf-list-section {
+    margin-bottom: 40px;
+}
+
+.lf-list-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.lf-list-header h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lf-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.lf-dot-lost {
+    background: var(--lf-lost);
+}
+
+.lf-dot-found {
+    background: var(--lf-found);
+}
+
+.lf-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--lf-ink-soft);
+}
+
+.lf-cards {
+    display: grid;
+    gap: 12px;
+}
+
+.lf-item-card {
+    background: var(--lf-card);
+    border: 1px solid var(--lf-line);
+    border-radius: var(--lf-radius);
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.lf-item-main strong {
+    font-size: 1rem;
+}
+
+.lf-item-meta {
+    font-size: 0.82rem;
+    color: var(--lf-ink-soft);
+    margin-top: 4px;
+}
+
+.lf-item-meta span+span::before {
+    content: "·";
+    margin: 0 6px;
+}
+
+.lf-item-btn {
+    border: 1px solid var(--lf-line);
+    background: var(--lf-paper);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--lf-ink);
+    white-space: nowrap;
+}
+
+.lf-item-btn:hover {
+    border-color: var(--lf-ink);
+}
+
+.lf-empty {
+    display: none;
+    color: var(--lf-ink-soft);
+    font-size: 0.9rem;
+    padding: 18px 0;
+}
+
+.lf-empty.lf-show {
+    display: block;
+}
+
+/* Modals */
+.lf-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 35, 56, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+}
+
+.lf-overlay.lf-open {
+    display: flex;
+}
+
+.lf-modal {
+    background: var(--lf-card);
+    border-radius: var(--lf-radius);
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 86vh;
+    overflow-y: auto;
+}
+
+.lf-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.lf-modal-head h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.lf-close {
+    border: none;
+    background: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: var(--lf-ink-soft);
+}
+
+.lf-modal label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--lf-ink-soft);
+}
+
+.lf-modal input,
+.lf-modal textarea {
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--lf-ink);
+    border: 1px solid var(--lf-line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    resize: vertical;
+}
+
+.lf-modal input:focus,
+.lf-modal textarea:focus {
+    outline: 2px solid var(--lf-ink);
+    outline-offset: 1px;
+}
+
+.lf-submit {
+    margin-top: 4px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+    cursor: pointer;
+}
+
+.lf-submit-lost {
+    background: var(--lf-lost);
+}
+
+.lf-submit-found {
+    background: var(--lf-found);
+}
+
+.lf-detail-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 14px;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.lf-detail-grid dt {
+    color: var(--lf-ink-soft);
+}
+
+.lf-detail-grid dd {
+    margin: 0;
+}
+
+@media (max-width: 560px) {
+    .lf-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .lf-item-card {
+        grid-template-columns: 1fr;
+    }
+
+    .lf-item-btn {
+        justify-self: start;
+    }
+}
+
+/* Back-to-home buttons */
+.lf-home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--lf-ink);
+    text-decoration: none;
+    border: 1px solid var(--lf-line);
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: var(--lf-card);
+    white-space: nowrap;
+}
+
+.lf-home-btn:hover {
+    border-color: var(--lf-ink);
+}
+
+.lf-home-btn-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+}
+
+/* History */
+.lf-dot-history {
+    background: #a9832c;
+}
+
+.lf-item-card.lf-history-card {
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+}
+
+.lf-history-photo {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--lf-line);
+}
+
+.lf-history-meta {
+    font-size: 0.82rem;
+    color: var(--lf-ink-soft);
+    margin-top: 4px;
+}
+
+.lf-status-given {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: #a9832c;
+    background: #fbf1de;
+    border-radius: 6px;
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+
+/* Claim modal */
+.lf-claim-item {
+    margin: -6px 0 0;
+    font-size: 0.88rem;
+    color: var(--lf-ink-soft);
+}
+
+.lf-photo-preview {
+    display: none;
+}
+
+.lf-photo-preview.lf-show {
+    display: block;
+}
+
+.lf-photo-preview img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--lf-line);
+}
+
+.lf-item-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-self: end;
+}
+
+@media (max-width: 560px) {
+    .lf-item-actions {
+        justify-self: start;
+    }
 }
