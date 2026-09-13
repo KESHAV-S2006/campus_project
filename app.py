@@ -622,10 +622,25 @@ def serve_home():
     return render_template('home.html')
 
 
+@app.route('/home.html')
+@login_required
+def serve_home_page():
+
+    return render_template('home.html')
+
+
 @app.route('/login.html')
 def serve_login():
 
     return render_template('login.html')
+
+
+@app.route('/lostfound.html')
+@app.route('/lostFound.html')
+@login_required
+def serve_lost_found():
+
+    return render_template('lostfound.html')
 
 
 @app.route('/avalableBUS.html')

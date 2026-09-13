@@ -52,6 +52,19 @@ class DailyResetTests(unittest.TestCase):
             self.assertEqual(Booking.query.count(), 0)
             self.assertGreater(Trip.query.count(), 0)
 
+    def test_lost_found_page_and_home_route_are_available_to_logged_in_users(self):
+        with app.test_client() as client:
+            with client.session_transaction() as session:
+                session['user_id'] = 1
+
+            home_response = client.get('/home.html')
+            lost_response = client.get('/lostfound.html')
+
+            self.assertEqual(home_response.status_code, 200)
+            self.assertEqual(lost_response.status_code, 200)
+            self.assertIn('CampusConnect', home_response.get_data(as_text=True))
+            self.assertIn('Lost &amp; Found', lost_response.get_data(as_text=True))
+
 
 if __name__ == '__main__':
     unittest.main()

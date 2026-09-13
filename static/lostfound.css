@@ -1,71 +1,91 @@
-/* Lost & Found — companion stylesheet, loaded after /static/style.css */
-
 :root {
-    --lf-ink: #0c0e14;
-    --lf-ink-soft: #46659e;
-    --lf-paper: #f6f5f1;
-    --lf-card: #ffffff;
-    --lf-line: #e2e0d8;
-    --lf-lost: #b4472b;
-    --lf-lost-bg: #fbebe5;
-    --lf-found: #3f7a54;
-    --lf-found-bg: #e8f2ea;
-    --lf-radius: 14px;
+    --lf-bg: #130623;
+    --lf-panel: rgba(20, 24, 37, 0.82);
+    --lf-panel-strong: rgba(25, 30, 46, 0.96);
+    --lf-card: rgba(17, 22, 33, 0.9);
+    --lf-card-strong: #1b2334;
+    --lf-line: rgba(216, 180, 99, 0.16);
+    --lf-text: #f2efe8;
+    --lf-muted: #a8afc3;
+    --lf-lost: #ff7b6b;
+    --lf-lost-soft: rgba(255, 123, 107, 0.12);
+    --lf-found: #58d39a;
+    --lf-found-soft: rgba(88, 211, 154, 0.12);
+    --lf-history: #e3b85d;
+    --lf-history-soft: rgba(227, 184, 93, 0.12);
+    --lf-radius: 18px;
+    --lf-shadow: 0 20px 45px rgba(4, 8, 18, 0.42);
     font-synthesis: none;
 }
 
+body {
+    background: var(--lf-bg);
+    color: var(--lf-text);
+}
+
 .lf-container {
-    max-width: 880px;
+    max-width: 980px;
     margin: 0 auto;
-    padding: 32px 24px 80px;
+    padding: 36px 24px 80px;
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
-    color: var(--lf-ink);
+    color: var(--lf-text);
 }
 
 .lf-back {
     display: inline-block;
-    font-size: 0.85rem;
-    color: var(--lf-ink-soft);
+    font-size: 0.8rem;
+    color: var(--lf-muted);
     text-decoration: none;
     margin-bottom: 28px;
+    transition: color 0.2s ease;
 }
 
 .lf-back:hover {
-    color: var(--lf-ink);
+    color: var(--lf-text);
 }
 
-/* Hero */
 .lf-hero {
-    padding-bottom: 36px;
-    border-bottom: 1px solid var(--lf-line);
-    margin-bottom: 40px;
+    padding: 30px 28px 26px;
+    background: linear-gradient(135deg, rgba(216, 180, 99, 0.12), rgba(88, 211, 154, 0.08));
+    border: 1px solid var(--lf-line);
+    border-radius: calc(var(--lf-radius) + 4px);
+    box-shadow: var(--lf-shadow);
+    margin-bottom: 42px;
 }
 
 .lf-eyebrow {
+    display: inline-block;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--lf-ink-soft);
-    letter-spacing: 0.02em;
+    font-size: 0.72rem;
+    color: #f1ce82;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(216, 180, 99, 0.15);
+    padding: 7px 10px;
+    border-radius: 999px;
 }
 
 .lf-hero h1 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: clamp(1.9rem, 4vw, 2.7rem);
-    line-height: 1.15;
-    margin: 12px 0 10px;
+    font-size: clamp(2.1rem, 4vw, 3.2rem);
+    line-height: 1.08;
+    margin: 18px 0 12px;
+    letter-spacing: -0.03em;
 }
 
 .lf-sub {
-    color: var(--lf-ink-soft);
-    max-width: 42ch;
-    line-height: 1.5;
+    color: var(--lf-muted);
+    max-width: 46ch;
+    line-height: 1.6;
     margin: 0 0 28px;
+    font-size: 1rem;
 }
 
 .lf-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
 }
 
@@ -73,50 +93,55 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     text-align: left;
-    background: var(--lf-card);
+    background: rgba(19, 23, 32, 0.82);
     border: 1px solid var(--lf-line);
     border-radius: var(--lf-radius);
-    padding: 20px;
+    padding: 20px 18px;
     cursor: pointer;
     font-family: inherit;
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .lf-action-card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.18);
 }
 
 .lf-action-lost:hover {
-    border-color: var(--lf-lost);
+    border-color: rgba(255, 123, 107, 0.6);
 }
 
 .lf-action-found:hover {
-    border-color: var(--lf-found);
+    border-color: rgba(88, 211, 154, 0.6);
 }
 
 .lf-action-icon {
-    font-size: 1.3rem;
+    font-size: 1.45rem;
 }
 
 .lf-action-text strong {
     display: block;
-    font-size: 1.05rem;
+    font-size: 1.08rem;
+    margin-bottom: 4px;
 }
 
 .lf-action-text em {
     display: block;
     font-style: normal;
-    font-size: 0.85rem;
-    color: var(--lf-ink-soft);
-    margin-top: 2px;
+    font-size: 0.82rem;
+    color: var(--lf-muted);
+    line-height: 1.5;
 }
 
 .lf-action-cta {
-    margin-top: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
+    margin-top: auto;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
 }
 
 .lf-action-lost .lf-action-cta {
@@ -127,9 +152,8 @@
     color: var(--lf-found);
 }
 
-/* List sections */
 .lf-list-section {
-    margin-bottom: 40px;
+    margin-bottom: 42px;
 }
 
 .lf-list-header {
@@ -137,36 +161,48 @@
     align-items: baseline;
     justify-content: space-between;
     margin-bottom: 14px;
+    gap: 12px;
 }
 
 .lf-list-header h2 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: 1.3rem;
+    font-size: 1.35rem;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .lf-dot {
-    width: 9px;
-    height: 9px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     display: inline-block;
 }
 
 .lf-dot-lost {
     background: var(--lf-lost);
+    box-shadow: 0 0 12px rgba(255, 123, 107, 0.55);
 }
 
 .lf-dot-found {
     background: var(--lf-found);
+    box-shadow: 0 0 12px rgba(88, 211, 154, 0.5);
+}
+
+.lf-dot-history {
+    background: var(--lf-history);
+    box-shadow: 0 0 12px rgba(227, 184, 93, 0.55);
 }
 
 .lf-count {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--lf-ink-soft);
+    font-size: 0.75rem;
+    color: var(--lf-muted);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--lf-line);
+    padding: 6px 10px;
+    border-radius: 999px;
 }
 
 .lf-cards {
@@ -183,56 +219,59 @@
     grid-template-columns: 1fr auto;
     align-items: center;
     gap: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .lf-item-main strong {
     font-size: 1rem;
+    color: var(--lf-text);
 }
 
 .lf-item-meta {
     font-size: 0.82rem;
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
     margin-top: 4px;
 }
 
-.lf-item-meta span+span::before {
+.lf-item-meta span + span::before {
     content: "·";
     margin: 0 6px;
 }
 
 .lf-item-btn {
     border: 1px solid var(--lf-line);
-    background: var(--lf-paper);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.82rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
-    color: var(--lf-ink);
+    color: var(--lf-text);
     white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .lf-item-btn:hover {
-    border-color: var(--lf-ink);
+    border-color: rgba(216, 180, 99, 0.5);
+    background: rgba(216, 180, 99, 0.08);
 }
 
 .lf-empty {
     display: none;
-    color: var(--lf-ink-soft);
-    font-size: 0.9rem;
-    padding: 18px 0;
+    color: var(--lf-muted);
+    font-size: 0.92rem;
+    padding: 18px 0 10px;
 }
 
 .lf-empty.lf-show {
     display: block;
 }
 
-/* Modals */
 .lf-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(24, 35, 56, 0.45);
+    background: rgba(8, 10, 18, 0.68);
     align-items: center;
     justify-content: center;
     padding: 20px;
@@ -244,16 +283,18 @@
 }
 
 .lf-modal {
-    background: var(--lf-card);
+    background: var(--lf-panel-strong);
+    border: 1px solid var(--lf-line);
     border-radius: var(--lf-radius);
     padding: 24px;
     width: 100%;
-    max-width: 420px;
+    max-width: 430px;
     display: flex;
     flex-direction: column;
     gap: 14px;
     max-height: 86vh;
     overflow-y: auto;
+    box-shadow: var(--lf-shadow);
 }
 
 .lf-modal-head {
@@ -264,7 +305,7 @@
 
 .lf-modal-head h3 {
     font-family: 'Fraunces', serif;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin: 0;
 }
 
@@ -273,7 +314,7 @@
     background: none;
     font-size: 1rem;
     cursor: pointer;
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
 }
 
 .lf-modal label {
@@ -281,43 +322,50 @@
     flex-direction: column;
     gap: 6px;
     font-size: 0.85rem;
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
 }
 
 .lf-modal input,
 .lf-modal textarea {
     font-family: inherit;
     font-size: 0.95rem;
-    color: var(--lf-ink);
+    color: var(--lf-text);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--lf-line);
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 10px 12px;
     resize: vertical;
 }
 
 .lf-modal input:focus,
 .lf-modal textarea:focus {
-    outline: 2px solid var(--lf-ink);
+    outline: 2px solid rgba(216, 180, 99, 0.5);
     outline-offset: 1px;
+    border-color: rgba(216, 180, 99, 0.5);
 }
 
 .lf-submit {
     margin-top: 4px;
     border: none;
-    border-radius: 8px;
-    padding: 12px;
+    border-radius: 10px;
+    padding: 12px 14px;
     font-weight: 600;
     font-size: 0.95rem;
-    color: #fff;
+    color: #111827;
     cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.lf-submit:hover {
+    transform: translateY(-1px);
 }
 
 .lf-submit-lost {
-    background: var(--lf-lost);
+    background: linear-gradient(135deg, #ff8c7a, #ff6d62);
 }
 
 .lf-submit-found {
-    background: var(--lf-found);
+    background: linear-gradient(135deg, #7be3af, #58d39a);
 }
 
 .lf-detail-grid {
@@ -329,45 +377,33 @@
 }
 
 .lf-detail-grid dt {
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
 }
 
 .lf-detail-grid dd {
     margin: 0;
+    color: var(--lf-text);
 }
 
-@media (max-width: 560px) {
-    .lf-actions {
-        grid-template-columns: 1fr;
-    }
-
-    .lf-item-card {
-        grid-template-columns: 1fr;
-    }
-
-    .lf-item-btn {
-        justify-self: start;
-    }
-}
-
-/* Back-to-home buttons */
 .lf-home-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--lf-ink);
+    color: var(--lf-text);
     text-decoration: none;
     border: 1px solid var(--lf-line);
-    border-radius: 8px;
-    padding: 8px 14px;
-    background: var(--lf-card);
+    border-radius: 10px;
+    padding: 9px 14px;
+    background: rgba(255, 255, 255, 0.02);
     white-space: nowrap;
+    transition: all 0.2s ease;
 }
 
 .lf-home-btn:hover {
-    border-color: var(--lf-ink);
+    border-color: rgba(216, 180, 99, 0.5);
+    background: rgba(216, 180, 99, 0.08);
 }
 
 .lf-home-btn-wrap {
@@ -376,45 +412,40 @@
     padding-top: 8px;
 }
 
-/* History */
-.lf-dot-history {
-    background: #a9832c;
-}
-
 .lf-item-card.lf-history-card {
     grid-template-columns: auto 1fr auto;
     align-items: center;
 }
 
 .lf-history-photo {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
     object-fit: cover;
     border: 1px solid var(--lf-line);
 }
 
 .lf-history-meta {
     font-size: 0.82rem;
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
     margin-top: 4px;
 }
 
 .lf-status-given {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
-    color: #a9832c;
-    background: #fbf1de;
-    border-radius: 6px;
-    padding: 4px 8px;
+    color: #fce2a3;
+    background: rgba(227, 184, 93, 0.12);
+    border: 1px solid rgba(227, 184, 93, 0.28);
+    border-radius: 999px;
+    padding: 6px 8px;
     white-space: nowrap;
 }
 
-/* Claim modal */
 .lf-claim-item {
     margin: -6px 0 0;
     font-size: 0.88rem;
-    color: var(--lf-ink-soft);
+    color: var(--lf-muted);
 }
 
 .lf-photo-preview {
@@ -429,7 +460,7 @@
     width: 100%;
     max-height: 180px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid var(--lf-line);
 }
 
@@ -440,7 +471,16 @@
     justify-self: end;
 }
 
-@media (max-width: 560px) {
+@media (max-width: 680px) {
+    .lf-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .lf-item-card {
+        grid-template-columns: 1fr;
+    }
+
+    .lf-item-btn,
     .lf-item-actions {
         justify-self: start;
     }
